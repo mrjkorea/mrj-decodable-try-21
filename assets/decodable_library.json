@@ -1,0 +1,165 @@
+{
+  "product": "decodable",
+  "books": [
+    {
+      "id": "mlr_dec_021",
+      "title": "Squids",
+      "level": "DEC 021",
+      "sound": "+qu",
+      "align": "align_mlr_dec_021.json",
+      "cover": "books/mlr_dec_021/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_022",
+      "title": "Vim in the Vet Van",
+      "level": "DEC 022",
+      "sound": "+v",
+      "align": "align_mlr_dec_022.json",
+      "cover": "books/mlr_dec_022/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_023",
+      "title": "Zips",
+      "level": "DEC 023",
+      "sound": "+z",
+      "align": "align_mlr_dec_023.json",
+      "cover": "books/mlr_dec_023/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_024",
+      "title": "Dev and His Pup Zip",
+      "level": "DEC 024",
+      "sound": "-s /s/ /z/",
+      "align": "align_mlr_dec_024.json",
+      "cover": "books/mlr_dec_024/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_025",
+      "title": "Hills",
+      "level": "DEC 025",
+      "sound": "ff ll ss zz",
+      "align": "align_mlr_dec_025.json",
+      "cover": "books/mlr_dec_025/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_026",
+      "title": "Hal's Ball at the Mall",
+      "level": "DEC 026",
+      "sound": "-all",
+      "align": "align_mlr_dec_026.json",
+      "cover": "books/mlr_dec_026/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_027",
+      "title": "Ducks",
+      "level": "DEC 027",
+      "sound": "ck",
+      "align": "align_mlr_dec_027.json",
+      "cover": "books/mlr_dec_027/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_028",
+      "title": "Glen's Club Flag",
+      "level": "DEC 028",
+      "sound": "L-blends bl cl fl gl pl",
+      "align": "align_mlr_dec_028.json",
+      "cover": "books/mlr_dec_028/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_029",
+      "title": "Frogs",
+      "level": "DEC 029",
+      "sound": "R-blends br cr dr fr gr pr tr",
+      "align": "align_mlr_dec_029.json",
+      "cover": "books/mlr_dec_029/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_030",
+      "title": "Stan Spins",
+      "level": "DEC 030",
+      "sound": "S-blends st sp sn sm sk sl",
+      "align": "align_mlr_dec_030.json",
+      "cover": "books/mlr_dec_030/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_031",
+      "title": "Tents",
+      "level": "DEC 031",
+      "sound": "end blends nd nt mp ft",
+      "align": "align_mlr_dec_031.json",
+      "cover": "books/mlr_dec_031/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_032",
+      "title": "Shan's Big Fish",
+      "level": "DEC 032",
+      "sound": "sh",
+      "align": "align_mlr_dec_032.json",
+      "cover": "books/mlr_dec_032/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_033",
+      "title": "Lunch",
+      "level": "DEC 033",
+      "sound": "ch",
+      "align": "align_mlr_dec_033.json",
+      "cover": "books/mlr_dec_033/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_034",
+      "title": "The Thin Path",
+      "level": "DEC 034",
+      "sound": "th (thin — voiceless /th/)",
+      "align": "align_mlr_dec_034.json",
+      "cover": "books/mlr_dec_034/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_035",
+      "title": "Bath Night",
+      "level": "DEC 035",
+      "sound": "th this (voiced /th/)",
+      "align": "align_mlr_dec_035.json",
+      "cover": "books/mlr_dec_035/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_036",
+      "title": "Malik Whisks Up Milk Fluff",
+      "level": "DEC 036",
+      "sound": "wh",
+      "align": "align_mlr_dec_036.json",
+      "cover": "books/mlr_dec_036/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_037",
+      "title": "Gongs",
+      "level": "DEC 037",
+      "sound": "ng",
+      "align": "align_mlr_dec_037.json",
+      "cover": "books/mlr_dec_037/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_038",
+      "title": "Frank's Pink Bank",
+      "level": "DEC 038",
+      "sound": "nk",
+      "align": "align_mlr_dec_038.json",
+      "cover": "books/mlr_dec_038/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_039",
+      "title": "Matches",
+      "level": "DEC 039",
+      "sound": "tch",
+      "align": "align_mlr_dec_039.json",
+      "cover": "books/mlr_dec_039/pages/p01.webp"
+    },
+    {
+      "id": "mlr_dec_040",
+      "title": "Bek's Bridge Duck",
+      "level": "DEC 040",
+      "sound": "dge",
+      "align": "align_mlr_dec_040.json",
+      "cover": "books/mlr_dec_040/pages/p01.webp"
+    }
+  ]
+}
