@@ -1,0 +1,7 @@
+{
+  "name": "mrj-decodable-try-21",
+  "private": true,
+  "scripts": {
+    "test": "node test/dec21-progress-merge.test.js && node test/index-html-script-syntax.test.js"
+  }
+}
