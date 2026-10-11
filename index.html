@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="mrj-build" content="dec21-20261008-band20namepill1" />
+<meta name="mrj-build" content="dec21-20261011-savefix" />
 <title>MRJ Decodables — Books 21-40</title>
 <style>
 :root{--bg:#070d18;--card:#101a2e;--text:#f4f7ff;--muted:#a9b7d6;--hl:#ffd84a;--ok:#3ecf8e}
@@ -284,9 +284,9 @@ body.student-desk #bookStage #play{
 <link rel="stylesheet" href="https://mrjkorea.github.io/mrj-signin/mrj-auth.css">
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth.js"></script>
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth-boot.js" data-mrj-app="mrj-decodable-try-21"></script>
-<script src="dec21-progress-merge.js?v=dec21-20261008-band20namepill1"></script>
+<script src="dec21-progress-merge.js?v=dec21-20261011-savefix"></script>
 <script>
-const MRJ_BUILD='dec21-20261008-band20namepill1';
+const MRJ_BUILD='dec21-20261011-savefix';
 const TEST=false;
 const ASSET_V='dec20261010saycitrinet';
 const MERGE=window.DEC21_PROGRESS_MERGE;
@@ -478,11 +478,16 @@ function settings(){ return Object.assign({parentLock:false,showLang:true,lang:'
 function setSettings(patch){ const all=loadAll(); all._settings=Object.assign(settings(), patch); saveAll(all); }
 function bookOrder(){ return (lib.books||[]).slice(0, MAX_BOOKS).map(b=>b.id); }
 function unlocked(id){ const o=bookOrder(); const i=o.indexOf(id); return i===0 || (i>0 && !!bookProg(o[i-1]).passed); }
-function studentName(){
+function signedInStudent(){
   try {
     if (window.MRJ_AUTH && MRJ_AUTH.student()) return String(MRJ_AUTH.student()).trim();
-    return String(localStorage.getItem(STUDENT_KEY)||'').trim();
-  } catch(e) { return ''; }
+  } catch(e) {}
+  return '';
+}
+function studentName(){
+  const id=signedInStudent();
+  if(id) return id;
+  try { return String(localStorage.getItem(STUDENT_KEY)||'').trim(); } catch(e) { return ''; }
 }
 function studentPin(){ try{ return String(localStorage.getItem(PIN_KEY)||'').replace(/\D/g,'').slice(0,4); }catch(e){ return ''; } }
 function progressBlob(){
@@ -579,44 +584,45 @@ window.addEventListener('mrj-auth-ready', function(ev){
 if(window.MRJ_AUTH && MRJ_AUTH.student()){
   onAuthSessionReady(String(MRJ_AUTH.student()).trim());
 }
-function reportProgress(bookId, itemId, completed, scorePct, extra){
-  const name=studentName();
-  if(!name || !bookId || !itemId) return;
-  const sectionId=String(itemId);
-  const metricsItemId=scoreItemId(bookId, sectionId);
-  const meta={student:name, section:sectionId, book_id:bookId};
-  if(extra && typeof extra==='object') Object.keys(extra).forEach(k=>{ meta[k]=extra[k]; });
-  const event={
-    event_id:'dec-'+metricsItemId+'-'+Date.now().toString(36),
-    event_kind:'decodable_progress',
-    source:'decodable',
-    app_name:'MRJ Decodables',
-    curriculum_program:'decodable',
-    book_title:bookId,
-    item_id:metricsItemId,
-    item_type:'section',
-    completed:completed===true,
-    metadata_json:JSON.stringify(meta)
-  };
-  if(scorePct!=null && isFinite(+scorePct)) event.score_pct=Math.round(+scorePct);
-  sheetPost(SCORE_URL, {
-    student_email:'unknown',
-    student_name:name,
-    session_id:'decodable-'+name,
-    events:[event]
-  });
+const SCORE_REPORTER=(MERGE && MERGE.createDecodableScoreReporter)?MERGE.createDecodableScoreReporter({
+  getStudent:signedInStudent,
+  postScores:function(body){ return sheetPost(SCORE_URL, body); },
+  noteScore:function(opts){
+    try{
+      if(window.MRJ_AUTH && MRJ_AUTH.noteScore) return MRJ_AUTH.noteScore(opts);
+    }catch(e){}
+    return null;
+  }
+}):null;
+function reportScore(bookId, section, raw, max, extra, opts){
+  if(!SCORE_REPORTER) return;
+  SCORE_REPORTER.reportScore(bookId, section, raw, max, extra, opts);
   saveSheetProgress();
+}
+function speakRawMax(bookId){
+  const bp=bookProg(bookId);
+  const sp=bp.speakPages||{};
+  const vals=Object.keys(sp).map(k=>+sp[k]).filter(n=>isFinite(n));
+  const raw=Math.round(vals.reduce((a,b)=>a+b,0));
+  const pageCount=(pack && pack.book_id===bookId && pack.pages)?pack.pages.length:Object.keys(sp).length;
+  const max=100*pageCount;
+  return {raw, max, pages:pageCount};
 }
 function sectionAlready(bookId, flag, itemId){
   const bp=bookProg(bookId);
   return !!(bp[flag] || (bp.reported||[]).indexOf(itemId)>=0);
 }
-function markSection(bookId, flag, itemId, scorePct){
+function markSection(bookId, flag, itemId){
   if(sectionAlready(bookId, flag, itemId)) return;
   const patch={reported:[itemId]};
   patch[flag]=true;
   setBookProg(bookId, patch);
-  reportProgress(bookId, itemId, true, scorePct);
+  if(itemId==='speak'){
+    const t=speakRawMax(bookId);
+    reportScore(bookId, 'speak', t.raw, t.max, {pages:t.pages}, {completed:true});
+  }else{
+    reportScore(bookId, itemId, 1, 1, null, {completed:true, itemType:'completion'});
+  }
 }
 function speakPageItem(pageIdx){
   return 'speak-p'+String(pageIdx+1).padStart(2,'0');
@@ -1337,9 +1343,9 @@ function nextDict(){
     const pct=Math.round(100*dictRight/dictQueue.length);
     const missed=dictMisses.slice();
     const meta={missed:missed};
-    if(pct>=DICT_PASS){ setBookProg(pack.book_id,{dictation:true,dictScore:pct}); reportProgress(pack.book_id,'dictation',true,pct,meta); setMode('speak'); }
+    if(pct>=DICT_PASS){ setBookProg(pack.book_id,{dictation:true,dictScore:pct}); reportScore(pack.book_id,'dictation',dictRight,dictQueue.length,meta,{completed:true}); setMode('speak'); }
     else {
-      reportProgress(pack.book_id,'dictation',false,pct,meta);
+      reportScore(pack.book_id,'dictation',dictRight,dictQueue.length,meta,{completed:false});
       $('workStage').classList.remove('dict-fit');
       const missedHtml=missed.map(s=>`<div class="g-en">${String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`).join('');
       $('workBody').innerHTML=`<div class="pass">${pct}%</div>
@@ -1535,7 +1541,7 @@ function startSpeak(){
   const bp=bookProg(pack.book_id);
   sayPage = Object.keys(bp.speakPages||{}).length;
   if(sayPage>=pack.pages.length){
-    markSection(pack.book_id,'speak','speak',speakScorePct());
+    markSection(pack.book_id,'speak','speak');
     setMode('pass');
     return;
   }
@@ -1682,7 +1688,7 @@ async function gradeBlob(line, blob){
     if(sc>sayBest) sayBest=sc;
     sayTriesSave();
     setBookProg(pack.book_id,{speakFails:[{page:sayPage+1, score:sc}]});
-    reportProgress(pack.book_id, speakPageItem(sayPage), false, sc);
+    reportScore(pack.book_id, speakPageItem(sayPage), sc, 100, null, {completed:false, itemType:'attempt', noteSSI:false});
     if(sayTries>=SAY_MAX_TRIES){
       $('speakStatus').textContent=sc+'% — 5 tries. Next page.';
       const mic=$('sayLine'); if(mic) mic.disabled=true;
@@ -1695,10 +1701,10 @@ function finishSayPage(score, passed){
   const pageItem=speakPageItem(sayPage);
   const sp=Object.assign({}, bookProg(pack.book_id).speakPages||{});
   sp[sayPage]=score; setBookProg(pack.book_id,{speakPages:sp});
-  if(passed!==false) reportProgress(pack.book_id, pageItem, true, score);
+  if(passed!==false) reportScore(pack.book_id, pageItem, score, 100, null, {completed:true});
   sayPage++;
   if(sayPage>=pack.pages.length){
-    markSection(pack.book_id,'speak','speak',speakScorePct());
+    markSection(pack.book_id,'speak','speak');
     setMode('pass');
   }
   else renderSay();
@@ -1709,7 +1715,7 @@ function renderPass(){
   setBookProg(pack.book_id,{passed:true,listen:true,song:true,read:true,dictation:true,speak:true});
   if(!already){
     setBookProg(pack.book_id,{reported:['passed']});
-    reportProgress(pack.book_id,'passed',true);
+    reportScore(pack.book_id,'passed',1,1,null,{completed:true,itemType:'completion'});
   }
   const order=bookOrder(); const i=order.indexOf(pack.book_id); const nxt=order[i+1];
   $('workBody').innerHTML=`<div class="pass">✅ ${pack.title} passed</div>
