@@ -64,7 +64,7 @@ async function mockAuth(page) {
       });
       return;
     }
-    if (url.includes('mrjkorea.github.io/mrj-signin') || url.includes('mrjkorea.github.io/mrj-decodable-try/pronounce')) {
+    if (url.includes('mrjkorea.github.io/mrj-signin') || url.includes('mrjkorea.github.io/pronounce-try/')) {
       await route.fulfill({ status: 200, contentType: 'text/javascript', body: '/* mock */' });
       return;
     }

@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const M = require('../dec21-progress-merge.js');
 
-const BUILD = 'dec21-20261011-savefix';
+const BUILD = 'dec21-20261013-citrinetonly';
 const FIXED_NOW = Date.UTC(2026, 9, 11, 12, 0, 0);
 const FIXED_DATE = '2026-10-11';
 
@@ -97,6 +97,9 @@ function makeReporter(student, hooks) {
   assert.ok(html.includes("const MRJ_BUILD='" + BUILD + "'"));
   assert.ok(html.includes('content="' + BUILD + '"'));
   assert.ok(html.includes('dec21-progress-merge.js?v=' + BUILD));
+  assert.ok(html.includes('pronounce/grade-browser.js?v=' + BUILD));
+  assert.ok(!html.includes('mrj-decodable-try/pronounce/ort/'));
+  assert.ok(!html.includes('mrj-decodable-try/pronounce/engine.js'));
 })();
 
 console.log('score-report: ok');
