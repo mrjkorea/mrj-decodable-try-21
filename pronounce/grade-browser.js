@@ -1,6 +1,6 @@
 /* MRJ Pronounce — Citrinet-only in-page grader (int8 ONNX, onnxruntime-web WASM). */
 (function (global) {
-  const DEFAULT_ORIGIN = 'https://mrjkorea.github.io/pronounce-try/';
+  const DEFAULT_ORIGIN = 'https://mrjkorea.github.io/pronounce/';
   let origin = DEFAULT_ORIGIN;
   const TRIAL_VER = '20261013-citrinet';
 
