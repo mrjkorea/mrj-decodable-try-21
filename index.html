@@ -4,7 +4,7 @@
 <!-- READ-TAP-GATE-20261012 -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="mrj-build" content="dec21-20261011-savefix" />
+<meta name="mrj-build" content="dec21-20261013-citrinetonly" />
 <title>MRJ Decodables — Books 21-40</title>
 <style>
 :root{--bg:#070d18;--card:#101a2e;--text:#f4f7ff;--muted:#a9b7d6;--hl:#ffd84a;--ok:#3ecf8e}
@@ -278,16 +278,14 @@ body.student-desk #bookStage #play{
     <button id="mSay">Say</button>
   </div>
 </div>
-<script src="https://mrjkorea.github.io/mrj-decodable-try/pronounce/ort/ort.all.min.js"></script>
-<script src="https://mrjkorea.github.io/mrj-decodable-try/pronounce/engine.js"></script>
-<script src="https://mrjkorea.github.io/mrj-decodable-try/pronounce/audio.js"></script>
-<script src="https://mrjkorea.github.io/mrj-decodable-try/pronounce/grade-browser.js?v=20261010-saycitrinet"></script>
+<script src="pronounce/audio.js?v=dec21-20261013-citrinetonly"></script>
+<script src="pronounce/grade-browser.js?v=dec21-20261013-citrinetonly"></script>
 <link rel="stylesheet" href="https://mrjkorea.github.io/mrj-signin/mrj-auth.css">
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth.js"></script>
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth-boot.js" data-mrj-app="mrj-decodable-try-21"></script>
-<script src="dec21-progress-merge.js?v=dec21-20261011-savefix"></script>
+<script src="dec21-progress-merge.js?v=dec21-20261013-citrinetonly"></script>
 <script>
-const MRJ_BUILD='dec21-20261011-savefix';
+const MRJ_BUILD='dec21-20261013-citrinetonly';
 const TEST=false;
 const ASSET_V='dec20261013famousgate';
 const MERGE=window.DEC21_PROGRESS_MERGE;
@@ -752,7 +750,7 @@ async function boot(){
   $('mSay').onclick=()=>setMode('speak');
   try{
     if(window.MRJPronounce){
-      MRJPronounce.setBase('https://mrjkorea.github.io/mrj-decodable-try/pronounce/');
+      MRJPronounce.setBase('https://mrjkorea.github.io/pronounce-try/');
       MRJPronounce.load().then(()=>{pronounceLoaded=true;}).catch(()=>{});
     }
   }catch(e){}
