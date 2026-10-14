@@ -370,7 +370,7 @@ let sheriffOk=false;
 let clipDone=false, showLang=true, lang='ko';
 let dictBuilt=[], dictQueue=[], dictIdx=0, dictRight=0, dictRate=0.8, dictMisses=[];
 let speakRec=null, sayPage=0, micCtx=null, lastYouBlob=null, lastTestBook=null;
-let sayTries=0, sayBest=0, sayAdvanceTimer=0;
+let sayTries=0, sayBest=0, sayMicPresses=0, sayAdvanceTimer=0;
 
 function blankProg(){ return {passed:false,listen:false,song:false,read:false,dictation:false,speak:false,readPages:{},difficulty:null,dictScore:null,speakPages:{},speakFails:[],reported:[]}; }
 function toNum(n){ const x=+n; return isFinite(x)?x:0; }
@@ -645,10 +645,10 @@ function syncModeLocks(){
 function showSign(){ return; }
 function gloss(lem){ return ((pack&&pack.glossary&&pack.glossary.entries)||[]).find(x=>x.lemma===lem); }
 function sayTarget(text){
-  const words=String(text||'').match(/[A-Za-z']+/g)||[];
+  const words=String(text||'').match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)||[];
   if(words.length===1){
     const w=words[0];
-    return w+', '+w+', '+w;
+    return w+' '+w+' '+w;
   }
   return text;
 }
@@ -1563,26 +1563,47 @@ function saySlot(){
 }
 function sayTriesLoad(){
   sayBest=0;
+  sayMicPresses=0;
   try{
     const raw=JSON.parse(localStorage.getItem(saySlot())||'null');
     if(!raw) return 0;
     sayBest=+raw.best||0;
+    sayMicPresses=+raw.micPresses||0;
     return +raw.tries||0;
   }catch(e){ return 0; }
 }
 function sayTriesSave(){
-  try{ localStorage.setItem(saySlot(), JSON.stringify({tries:sayTries, best:sayBest})); }catch(e){}
+  try{ localStorage.setItem(saySlot(), JSON.stringify({tries:sayTries, best:sayBest, micPresses:sayMicPresses})); }catch(e){}
 }
 function sayTriesClear(){
   try{ localStorage.removeItem(saySlot()); }catch(e){}
+  sayMicPresses=0;
 }
-function armSayAdvance(bestNow){
-  const pageNow=sayPage;
-  if(sayAdvanceTimer) clearTimeout(sayAdvanceTimer);
-  sayAdvanceTimer=setTimeout(()=>{
-    sayAdvanceTimer=0;
-    if(mode==='speak' && sayPage===pageNow) finishSayPage(bestNow, false);
-  }, 900);
+function sayForcedOut(){
+  return sayTries>=SAY_MAX_TRIES || sayMicPresses>=SAY_MAX_TRIES;
+}
+function showSayNext(bestSc, statusText){
+  const nextBtn=$('sayNext');
+  if(!nextBtn) return;
+  nextBtn.classList.remove('hidden');
+  const mic=$('sayLine'); if(mic) mic.disabled=true;
+  const stop=$('sayStop'); if(stop) stop.classList.add('hidden');
+  if(statusText) $('speakStatus').textContent=statusText;
+  const score=bestSc!=null?bestSc:sayBest;
+  nextBtn.onclick=()=>finishSayPage(score, false);
+}
+function sayOnMicPress(){
+  sayMicPresses++;
+  sayTriesSave();
+  if(sayForcedOut()) showSayNext(sayBest, (sayBest? sayBest+'% — ':'')+'5 tries. Tap Next.');
+}
+function sayBumpTry(scorePct){
+  sayTries++;
+  if(scorePct!=null && scorePct>sayBest) sayBest=scorePct;
+  sayTriesSave();
+  setBookProg(pack.book_id,{speakFails:[{page:sayPage+1, score:scorePct==null?0:scorePct}]});
+  reportScore(pack.book_id, speakPageItem(sayPage), scorePct==null?0:scorePct, 100, null, {completed:false, itemType:'attempt', noteSSI:false});
+  return sayForcedOut();
 }
 function startSpeak(){
   const bp=bookProg(pack.book_id);
@@ -1597,7 +1618,7 @@ function startSpeak(){
 function renderSay(){
   if(sayAdvanceTimer){ clearTimeout(sayAdvanceTimer); sayAdvanceTimer=0; }
   sayTries=sayTriesLoad();
-  if(sayTries>=SAY_MAX_TRIES){
+  if(sayForcedOut()){
     const best=sayBest;
     sayTriesClear();
     finishSayPage(best, false);
@@ -1642,7 +1663,7 @@ function wireRecorder(line){
   };
   const start=async ()=>{
     unlockMic();
-    const nx=$('sayNext'); if(nx) nx.classList.add('hidden');
+    const nx=$('sayNext'); if(nx && !sayForcedOut()) nx.classList.add('hidden');
     $('speakStatus').textContent='Listening… speak now';
     $('speakHeard').textContent='';
     $('wordScores').innerHTML='';
@@ -1658,6 +1679,7 @@ function wireRecorder(line){
       await gradeBlob(line, blob);
     };
     rec.start();
+    sayOnMicPress();
     stopBtn.classList.remove('hidden');
     bars.classList.remove('hidden');
     const ctx=unlockMic();
@@ -1689,11 +1711,13 @@ function wireRecorder(line){
   stopBtn.onclick=ev=>{ ev.preventDefault(); stop(); };
 }
 async function gradeBlob(line, blob){
-  const nx=$('sayNext'); if(nx) nx.classList.add('hidden');
+  const nx=$('sayNext'); if(nx && !sayForcedOut()) nx.classList.add('hidden');
   $('speakStatus').textContent='Checking your speaking…';
   if(!window.MRJPronounce){
     hideLoadbar();
-    $('speakStatus').textContent='Scoring engine missing. Reload the page.';
+    const forced=sayBumpTry(null);
+    if(forced) showSayNext(sayBest, 'Scoring engine missing. Tap Next to continue.');
+    else $('speakStatus').textContent='Scoring engine missing. Reload the page.';
     return;
   }
   let j;
@@ -1705,17 +1729,27 @@ async function gradeBlob(line, blob){
     j=await MRJPronounce.grade(blob, line);
   }catch(e){
     hideLoadbar();
-    $('speakStatus').textContent='Scoring failed. Tap 🎙️ again. '+(e && e.message ? e.message : '');
+    const forced=sayBumpTry(null);
+    const msg='Scoring failed. Tap 🎙️ again. '+(e && e.message ? e.message : '');
+    if(forced) showSayNext(sayBest, msg+' Or tap Next.');
+    else $('speakStatus').textContent=msg;
     return;
   }
   hideLoadbar();
   if(j.meta && String(j.meta.scoring_mode||'').startsWith('stub')){
-    $('speakStatus').textContent='Grader came back stub. Real model did not load.';
+    const forced=sayBumpTry(0);
+    const msg='Grader came back stub. Real model did not load.';
+    if(forced) showSayNext(sayBest, msg+' Tap Next to continue.');
+    else $('speakStatus').textContent=msg;
     return;
   }
   if(j.doorFail){
-    hideLoadbar();
-    $('speakStatus').textContent=j.reason||'';
+    const forced=sayBumpTry(0);
+    const reason=j.reason||'Say the sentence again, please. Say each word clearly.';
+    $('speakHeard').textContent='';
+    paintSayChips(line, null);
+    if(forced) showSayNext(sayBest, reason+' — 5 tries. Tap Next.');
+    else $('speakStatus').textContent=reason+' — try '+sayTries+' of '+SAY_MAX_TRIES+'.';
     return;
   }
   const sc=Math.round(100*(j.overall&&j.overall.score||0));
@@ -1731,16 +1765,9 @@ async function gradeBlob(line, blob){
       nextBtn.onclick=()=>finishSayPage(sc);
     }
   }else{
-    sayTries++;
-    if(sc>sayBest) sayBest=sc;
-    sayTriesSave();
-    setBookProg(pack.book_id,{speakFails:[{page:sayPage+1, score:sc}]});
-    reportScore(pack.book_id, speakPageItem(sayPage), sc, 100, null, {completed:false, itemType:'attempt', noteSSI:false});
-    if(sayTries>=SAY_MAX_TRIES){
-      $('speakStatus').textContent=sc+'% — 5 tries. Next page.';
-      const mic=$('sayLine'); if(mic) mic.disabled=true;
-      armSayAdvance(sayBest);
-    }else $('speakStatus').textContent=sc+'% — try '+sayTries+' of '+SAY_MAX_TRIES+'. Say it again.';
+    const forced=sayBumpTry(sc);
+    if(forced) showSayNext(sayBest, sc+'% — 5 tries. Tap Next.');
+    else $('speakStatus').textContent=sc+'% — try '+sayTries+' of '+SAY_MAX_TRIES+'. Say it again.';
   }
 }
 function finishSayPage(score, passed){
