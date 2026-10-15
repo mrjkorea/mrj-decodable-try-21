@@ -140,7 +140,7 @@ async function mockDoorFailGrader(page) {
         overall: { score: 0, band: 'fail' },
         words: [],
         model_id: 'mock',
-        meta: { scoring_mode: 'citrinet-only' },
+        meta: { scoring_mode: 'hubert-phoneme' },
       }),
     };
   });
@@ -242,7 +242,7 @@ try {
   }), line);
   assert.ok(live.next, `live grader: Next visible (${live.status})`);
   assert.ok(live.tries >= 5 || live.mic >= 5, `tries/mic: ${live.tries}/${live.mic}`);
-  console.log('live citrinet path:', live);
+  console.log('live hubert path:', live);
 
   console.log('playwright say-max-tries: ok');
 } finally {
