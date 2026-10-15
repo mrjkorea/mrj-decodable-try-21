@@ -4,7 +4,7 @@
 <!-- READ-TAP-GATE-20261012 -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="mrj-build" content="dec21-20261016-hubert" />
+<meta name="mrj-build" content="dec21-20261016-cm510-hubert" />
 <title>MRJ Decodables — Books 21-40</title>
 <style>
 :root{--bg:#070d18;--card:#101a2e;--text:#f4f7ff;--muted:#a9b7d6;--hl:#ffd84a;--ok:#3ecf8e}
@@ -278,13 +278,14 @@ body.student-desk #bookStage #play{
     <button id="mSay">Say</button>
   </div>
 </div>
-<script src="pronounce/grade-browser.js?v=dec21-20261016-hubert"></script>
+<script src="pronounce/grade-browser.js?v=dec21-20261016-cm510-hubert"></script>
 <link rel="stylesheet" href="https://mrjkorea.github.io/mrj-signin/mrj-auth.css">
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth.js"></script>
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth-boot.js" data-mrj-app="mrj-decodable-try-21"></script>
-<script src="dec21-progress-merge.js?v=dec21-20261016-hubert"></script>
+<script src="mrj-scores.js?v=dec21-20261016-cm510-hubert"></script>
+<script src="dec21-progress-merge.js?v=dec21-20261016-cm510-hubert"></script>
 <script>
-const MRJ_BUILD='dec21-20261016-hubert';
+const MRJ_BUILD='dec21-20261016-cm510-hubert';
 const TEST=false;
 const ASSET_V='dec20261015b40pages';
 const MERGE=window.DEC21_PROGRESS_MERGE;
@@ -584,9 +585,47 @@ window.addEventListener('mrj-auth-ready', function(ev){
 if(window.MRJ_AUTH && MRJ_AUTH.student()){
   onAuthSessionReady(String(MRJ_AUTH.student()).trim());
 }
+
+function postClassroomMetricsBody(body){
+  body=body||{};
+  const ev=(body.events&&body.events[0])||{};
+  let meta={};
+  try{ meta=JSON.parse(ev.metadata_json||'{}'); }catch(e){ meta={}; }
+  if(window.MRJ_SCORES && typeof MRJ_SCORES.post==='function'){
+    const opts={
+      student: body.student_name||'',
+      program: ev.curriculum_program||'decodable',
+      appName: ev.app_name||'MRJ Decodables',
+      source: ev.source||'decodable',
+      bookTitle: ev.book_title||'',
+      itemId: ev.item_id,
+      itemType: ev.item_type||'activity',
+      completed: ev.completed!==false,
+      metadata: meta
+    };
+    if(ev.event_id) opts.eventId=ev.event_id;
+    if(typeof ev.score_value==='number') opts.scoreValue=ev.score_value;
+    if(typeof ev.score_max==='number') opts.scoreMax=ev.score_max;
+    if(typeof ev.score_pct==='number') opts.scorePct=ev.score_pct;
+    return MRJ_SCORES.post(opts);
+  }
+  return sheetPost(SCORE_URL, body);
+}
+function reportIntroStep(section, extra){
+  if(!pack || !section) return;
+  const bookId=pack.book_id;
+  const bp=bookProg(bookId);
+  const itemId=section;
+  if(bp[section] || (bp.reported||[]).indexOf(itemId)>=0) return;
+  const patch={reported:[itemId]};
+  patch[section]=true;
+  setBookProg(bookId, patch);
+  const meta=Object.assign({sound: (typeof soundLine==='function'?soundLine(bookId):'')||(pack.sound||'')}, extra||{});
+  reportScore(bookId, section, 1, 1, meta, {completed:true, itemType:'completion'});
+}
 const SCORE_REPORTER=(MERGE && MERGE.createDecodableScoreReporter)?MERGE.createDecodableScoreReporter({
   getStudent:signedInStudent,
-  postScores:function(body){ return sheetPost(SCORE_URL, body); },
+  postScores:function(body){ return postClassroomMetricsBody(body); },
   noteScore:function(opts){
     try{
       if(window.MRJ_AUTH && MRJ_AUTH.noteScore) return MRJ_AUTH.noteScore(opts);
@@ -864,7 +903,7 @@ function showIntro(){
       $('introGo').textContent='Next';
       return;
     }
-    if(!letters.length){ introStep='famous-card'; showIntro(); return; }
+    if(!letters.length){ reportIntroStep('sound'); introStep='famous-card'; showIntro(); return; }
     const L=letters[cousinIdx];
     const cu=cousinGlyph(L);
     $('modeBadge').textContent=letterTitle(L);
