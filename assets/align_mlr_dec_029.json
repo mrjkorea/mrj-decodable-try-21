@@ -4,6 +4,9 @@
   "title": "Frogs",
   "level": "DEC 029",
   "sound": "R-blends br cr dr fr gr pr tr",
+  "letter_intros": [
+    "r_blends_letter_intro.mp4"
+  ],
   "famous": [
     "came"
   ],

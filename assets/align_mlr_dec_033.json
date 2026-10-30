@@ -4,6 +4,9 @@
   "title": "Lunch",
   "level": "DEC 033",
   "sound": "ch",
+  "letter_intros": [
+    "ch_letter_intro.mp4"
+  ],
   "famous": [
     "three"
   ],

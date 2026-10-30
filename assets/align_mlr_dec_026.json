@@ -4,6 +4,9 @@
   "title": "Hal's Ball at the Mall",
   "level": "DEC 026",
   "sound": "-all",
+  "letter_intros": [
+    "all_letter_intro.mp4"
+  ],
   "famous": [
     "how"
   ],

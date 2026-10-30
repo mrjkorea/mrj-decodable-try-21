@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const M = require('../dec21-progress-merge.js');
 
-const BUILD = 'dec21-20261022-teacher-mode';
+const BUILD = 'dec21-20261030-letter-intro';
 const FIXED_NOW = Date.UTC(2026, 9, 11, 12, 0, 0);
 const FIXED_DATE = '2026-10-11';
 

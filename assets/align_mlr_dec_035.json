@@ -4,6 +4,9 @@
   "title": "Bath Night",
   "level": "DEC 035",
   "sound": "th this (voiced /th/)",
+  "letter_intros": [
+    "th_this_letter_intro.mp4"
+  ],
   "famous": [
     "night"
   ],

@@ -4,6 +4,9 @@
   "title": "Frank's Pink Bank",
   "level": "DEC 038",
   "sound": "nk",
+  "letter_intros": [
+    "nk_letter_intro.mp4"
+  ],
   "famous": [
     "good"
   ],

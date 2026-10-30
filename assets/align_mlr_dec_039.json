@@ -4,6 +4,9 @@
   "title": "Matches",
   "level": "DEC 039",
   "sound": "tch",
+  "letter_intros": [
+    "tch_letter_intro.mp4"
+  ],
   "famous": [
     "book"
   ],

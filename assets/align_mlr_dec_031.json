@@ -4,6 +4,9 @@
   "title": "Tents",
   "level": "DEC 031",
   "sound": "end blends nd nt mp ft",
+  "letter_intros": [
+    "end_blends_letter_intro.mp4"
+  ],
   "famous": [
     "here"
   ],
