@@ -4,6 +4,9 @@
   "title": "The Thin Path",
   "level": "DEC 034",
   "sound": "th (thin — voiceless /th/)",
+  "letter_intros": [
+    "th_thin_letter_intro.mp4"
+  ],
   "famous": [
     "right"
   ],

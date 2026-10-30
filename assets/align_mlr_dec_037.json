@@ -4,6 +4,9 @@
   "title": "Gongs",
   "level": "DEC 037",
   "sound": "ng",
+  "letter_intros": [
+    "ng_letter_intro.mp4"
+  ],
   "famous": [
     "soon"
   ],

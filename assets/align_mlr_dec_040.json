@@ -4,6 +4,9 @@
   "title": "Bek's Bridge Duck",
   "level": "DEC 040",
   "sound": "dge",
+  "letter_intros": [
+    "dge_letter_intro.mp4"
+  ],
   "famous": [
     "rain"
   ],

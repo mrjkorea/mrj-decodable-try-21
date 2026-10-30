@@ -4,6 +4,9 @@
   "title": "Ducks",
   "level": "DEC 027",
   "sound": "ck",
+  "letter_intros": [
+    "ck_letter_intro.mp4"
+  ],
   "famous": [
     "play"
   ],

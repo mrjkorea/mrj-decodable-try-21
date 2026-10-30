@@ -4,6 +4,9 @@
   "title": "Squids",
   "level": "DEC 021",
   "sound": "+qu",
+  "letter_intros": [
+    "qu_letter_intro.mp4"
+  ],
   "famous": [
     "day"
   ],

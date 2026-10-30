@@ -4,6 +4,9 @@
   "title": "Malik Whisks Up Milk Fluff",
   "level": "DEC 036",
   "sound": "wh",
+  "letter_intros": [
+    "wh_letter_intro.mp4"
+  ],
   "famous": [
     "too"
   ],

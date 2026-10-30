@@ -4,6 +4,9 @@
   "title": "Hills",
   "level": "DEC 025",
   "sound": "ff ll ss zz",
+  "letter_intros": [
+    "ff_ll_ss_zz_letter_intro.mp4"
+  ],
   "famous": [
     "now"
   ],

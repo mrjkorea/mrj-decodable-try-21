@@ -4,6 +4,9 @@
   "title": "Glen's Club Flag",
   "level": "DEC 028",
   "sound": "L-blends bl cl fl gl pl",
+  "letter_intros": [
+    "l_blends_letter_intro.mp4"
+  ],
   "famous": [
     "take"
   ],

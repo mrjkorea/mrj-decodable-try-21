@@ -4,6 +4,9 @@
   "title": "Stan Spins",
   "level": "DEC 030",
   "sound": "S-blends st sp sn sm sk sl",
+  "letter_intros": [
+    "s_blends_letter_intro.mp4"
+  ],
   "famous": [
     "time"
   ],

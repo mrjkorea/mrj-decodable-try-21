@@ -4,6 +4,9 @@
   "title": "Zips",
   "level": "DEC 023",
   "sound": "+z",
+  "letter_intros": [
+    "z_letter_intro.mp4"
+  ],
   "famous": [
     "out"
   ],

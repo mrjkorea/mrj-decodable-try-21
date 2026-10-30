@@ -4,6 +4,9 @@
   "title": "Shan's Big Fish",
   "level": "DEC 032",
   "sound": "sh",
+  "letter_intros": [
+    "sh_letter_intro.mp4"
+  ],
   "famous": [
     "more"
   ],

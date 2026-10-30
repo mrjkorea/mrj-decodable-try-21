@@ -4,6 +4,9 @@
   "title": "Dev and His Pup Zip",
   "level": "DEC 024",
   "sound": "-s /s/ /z/",
+  "letter_intros": [
+    "s__s___z_letter_intro.mp4"
+  ],
   "famous": [
     "down"
   ],

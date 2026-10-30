@@ -4,6 +4,9 @@
   "title": "Vim in the Vet Van",
   "level": "DEC 022",
   "sound": "+v",
+  "letter_intros": [
+    "v_letter_intro.mp4"
+  ],
   "famous": [
     "way"
   ],
