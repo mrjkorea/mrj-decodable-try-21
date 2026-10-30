@@ -16,7 +16,7 @@ const mapBlock = html.match(/const LETTER_INTRO=\{([\s\S]*?)\};/);
 assert.ok(mapBlock, 'LETTER_INTRO fallback map required');
 const fallback = Object.fromEntries([...mapBlock[1].matchAll(/(mlr_dec_\d{3}):'([^']+)'/g)].map((m) => [m[1], m[2]]));
 assert.deepStrictEqual(Object.keys(fallback), lib.books.map((b) => b.id), 'LETTER_INTRO covers exactly the library books');
-const missing = [];
+const files = [];
 for (const book of lib.books) {
   const intros = JSON.parse(read('assets/' + book.align)).letter_intros;
   assert.ok(Array.isArray(intros) && intros.length === 1, `${book.id}: one letter_intros entry`);
@@ -24,9 +24,10 @@ for (const book of lib.books) {
   assert.match(file, /^[a-z0-9_]+_letter_intro\.mp4$/, `${book.id}: mp4 name`);
   assert.strictEqual(fallback[book.id], file, `${book.id}: LETTER_INTRO must match ${book.align}`);
   assert.ok(readme.includes('`' + file + '`'), `${book.id}: README lists ${file}`);
-  if (!fs.existsSync(path.join(root, 'assets/decodable/letter_intro', file))) missing.push(file);
+  files.push(file);
 }
-if (process.argv.includes('--media')) assert.deepStrictEqual(missing, [], 'letter-intro mp4s missing on disk');
+const onDisk = fs.readdirSync(path.join(root, 'assets/decodable/letter_intro')).filter((f) => f.endsWith('.mp4'));
+assert.deepStrictEqual(onDisk.sort(), [...files].sort(), 'assets/decodable/letter_intro holds exactly one mp4 per book');
 
 // Flow: run the app script against a small fake DOM and walk the intro.
 const els = new Map();
@@ -197,7 +198,7 @@ const reported = (id) => [...run(`bookProg('${id}').reported`)];
   run("pack.book_id='mlr_dec_099'; introStep='cousin'; showIntro()");
   assert.strictEqual(step(), 'famous-card', 'no sound card, letters or intro: straight to famous-card');
 
-  console.log(`letter-intro: ok (${lib.books.length} books, ${lib.books.length - missing.length} mp4s on disk)`);
+  console.log(`letter-intro: ok (${lib.books.length} books, ${onDisk.length} mp4s)`);
 })().catch((e) => {
   console.error(e);
   process.exit(1);

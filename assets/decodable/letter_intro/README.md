@@ -10,8 +10,8 @@ URL gets the `?v=ASSET_V` cache stamp. The file name comes from the book's
 `letter_intros[0]` in `assets/align_mlr_dec_0NN.json`; the `LETTER_INTRO` map in
 `index.html` is the fallback.
 
-The mp4s are not in git yet. They arrive in a follow-up tar.gz on the same
-branch. Unpack it flat into this folder, with no subfolders.
+The files come unchanged from the GitHub release `letter-intros-wire-20261030`:
+portrait 720×1280, H.264 + AAC, 39–47 seconds each, about 101 MB for all 20.
 
 | Book | Sound | File |
 | --- | --- | --- |
@@ -36,24 +36,22 @@ branch. Unpack it flat into this folder, with no subfolders.
 | mlr_dec_039 | tch | `tch_letter_intro.mp4` |
 | mlr_dec_040 | dge | `dge_letter_intro.mp4` |
 
-## Adding the media
+## Replacing the media
 
-From the repo root (use your tarball's name; add `--strip-components=1` if the
-tarball wraps the files in a top-level folder):
+Keep the same file names. From the repo root:
 
 ```sh
-tar -xzf letter_intros.tar.gz -C assets/decodable/letter_intro
-node test/letter-intro.test.js --media   # fails unless all 20 files are here
+gh release download <tag> --repo mrjkorea/mrj-decodable-try-21 -p '*.mp4' -D assets/decodable/letter_intro --clobber
+npm test   # letter-intro.test.js fails unless this folder holds exactly these 20 mp4s
 ```
 
 Use H.264 video with AAC audio (like the famous-carpet and chase clips) so the
 video plays on iPhone Safari. The video's own soundtrack is the narration, so
 the app plays it with the sound on.
 
-Keep the files small. The published site is already about 840 MB and GitHub
-Pages will not publish a site over 1 GB, so all 20 videos together should stay
-under about 150 MB (roughly 7 MB each). GitHub also rejects any single file
-over 100 MB.
+Keep the files small. With these 20 videos the published site is about 942 MB,
+and GitHub Pages will not publish a site over 1 GB. GitHub also rejects any
+single file over 100 MB.
 
 ## When a file is missing
 
