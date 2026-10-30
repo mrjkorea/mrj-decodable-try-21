@@ -1,0 +1,10 @@
+{
+  "file": "assets/books/mlr_dec_021/audio/words/squid.mp3",
+  "size_bytes": 11283,
+  "duration_sec": 0.705188,
+  "md5": "00d36468d71290aec1fccfbdbe672354",
+  "whisper_tiny_transcript": "Gwed.",
+  "expected_lemma": "squid",
+  "fixed_canon_md5_from_b41-60_band": "080835e527031c53e9a9c9297161ae46",
+  "diagnosis": "mis-labeled clip (audio says quit/squid-homophone, not /skw\u026ad/); MD5 differs from post-fix canon in books 41-60"
+}
