@@ -50,6 +50,11 @@ Use H.264 video with AAC audio (like the famous-carpet and chase clips) so the
 video plays on iPhone Safari. The video's own soundtrack is the narration, so
 the app plays it with the sound on.
 
+Keep the files small. The published site is already about 840 MB and GitHub
+Pages will not publish a site over 1 GB, so all 20 videos together should stay
+under about 150 MB (roughly 7 MB each). GitHub also rejects any single file
+over 100 MB.
+
 ## When a file is missing
 
 Students are not blocked. If the video fails to load, the app logs
