@@ -4,7 +4,7 @@
 <!-- READ-TAP-GATE-20261012 -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="mrj-build" content="dec21-20261022-teacher-mode" />
+<meta name="mrj-build" content="dec21-20261030-letter-intro" />
 <title>MRJ Decodables — Books 21-40</title>
 <style>
 :root{--bg:#070d18;--card:#101a2e;--text:#f4f7ff;--muted:#a9b7d6;--hl:#ffd84a;--ok:#3ecf8e}
@@ -144,6 +144,8 @@ select{width:100%;padding:10px;border-radius:12px;border:0;background:#1b2740;co
 .repeat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
 .repeat button{font-size:1.15rem}
 .carpetVid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+#introStage.letter-intro{display:flex;flex-direction:column;overflow:hidden}
+#introStage.letter-intro #introBody{position:relative;flex:1 1 auto;min-height:0;margin:-14px -14px 0;background:#000}
 .letterOut{position:absolute;left:50%;top:34%;transform:translate(-50%,-20%) scale(.2);opacity:0;font-size:5.4rem;font-weight:900;color:#ffe27a;text-shadow:0 0 22px #ffd84a;pointer-events:none}
 .letterOut.show{animation:stepout 2.2s ease forwards}
 @keyframes stepout{to{transform:translate(-50%,80%) scale(1);opacity:1;top:52%}}
@@ -284,14 +286,14 @@ body.student-desk #bookStage #play{
     <button id="mSay">Say</button>
   </div>
 </div>
-<script src="pronounce/grade-browser.js?v=dec21-20261022-teacher-mode"></script>
+<script src="pronounce/grade-browser.js?v=dec21-20261030-letter-intro"></script>
 <link rel="stylesheet" href="https://mrjkorea.github.io/mrj-signin/mrj-auth.css">
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth.js"></script>
 <script src="https://mrjkorea.github.io/mrj-signin/mrj-auth-boot.js" data-mrj-app="mrj-decodable-try-21"></script>
-<script src="mrj-scores.js?v=dec21-20261022-teacher-mode"></script>
-<script src="dec21-progress-merge.js?v=dec21-20261022-teacher-mode"></script>
+<script src="mrj-scores.js?v=dec21-20261030-letter-intro"></script>
+<script src="dec21-progress-merge.js?v=dec21-20261030-letter-intro"></script>
 <script>
-const MRJ_BUILD='dec21-20261022-teacher-mode';
+const MRJ_BUILD='dec21-20261030-letter-intro';
 const TEST=false;
 const ASSET_V='dec20261022dict2';
 const MERGE=window.DEC21_PROGRESS_MERGE;
@@ -389,11 +391,34 @@ const SOUND_CARD={
   mlr_dec_039:{show:'TCH', sub:'', hint:'/tʃ/ · match', mouth:'tch', say:'tch'},
   mlr_dec_040:{show:'DGE', sub:'', hint:'/dʒ/ · bridge', mouth:'dge', say:'dge'}
 };
+const LETTER_INTRO={
+  mlr_dec_021:'qu_letter_intro.mp4',
+  mlr_dec_022:'v_letter_intro.mp4',
+  mlr_dec_023:'z_letter_intro.mp4',
+  mlr_dec_024:'s__s___z_letter_intro.mp4',
+  mlr_dec_025:'ff_ll_ss_zz_letter_intro.mp4',
+  mlr_dec_026:'all_letter_intro.mp4',
+  mlr_dec_027:'ck_letter_intro.mp4',
+  mlr_dec_028:'l_blends_letter_intro.mp4',
+  mlr_dec_029:'r_blends_letter_intro.mp4',
+  mlr_dec_030:'s_blends_letter_intro.mp4',
+  mlr_dec_031:'end_blends_letter_intro.mp4',
+  mlr_dec_032:'sh_letter_intro.mp4',
+  mlr_dec_033:'ch_letter_intro.mp4',
+  mlr_dec_034:'th_thin_letter_intro.mp4',
+  mlr_dec_035:'th_this_letter_intro.mp4',
+  mlr_dec_036:'wh_letter_intro.mp4',
+  mlr_dec_037:'ng_letter_intro.mp4',
+  mlr_dec_038:'nk_letter_intro.mp4',
+  mlr_dec_039:'tch_letter_intro.mp4',
+  mlr_dec_040:'dge_letter_intro.mp4'
+};
 const TAUGHT={mlr_dec_001:['a','m','s','t'],mlr_dec_002:['a','m','s','t','p'],mlr_dec_003:['a','m','s','t','p','i'],mlr_dec_004:['a','m','s','t','p','i','n'],mlr_dec_005:['a','m','s','t','p','i','n','f'],mlr_dec_006:['a','m','s','t','p','i','n','f','o'],mlr_dec_007:['a','m','s','t','p','i','n','f','o','d'],mlr_dec_008:['a','m','s','t','p','i','n','f','o','d','c'],mlr_dec_009:['a','m','s','t','p','i','n','f','o','d','c','u'],mlr_dec_010:['a','m','s','t','p','i','n','f','o','d','c','u','g']};
 let lib=null, i18n=null, pack=null, pageIndex=0, mode='library', audio=null, listenGen=0, hlRaf=0;
 let introStep='mode', cousinIdx=0;
-let introDone=false;      // sound + famous + any pre-video finished -> Listen opens
+let introDone=false;      // sound + letter intro + famous + any pre-video finished -> Listen opens
 let preVideoDone=false;   // this book's start video (lawbreaker chase) played through
+let letterIntroDone=false; // letter-intro video ended (or failed to load) -> Next opens
 let famousVidEnded=false;
 let famousAudEnded=false;
 let tapped=new Set(), heardListen=new Set(), heardSong=new Set();
@@ -853,7 +878,7 @@ async function boot(){
   syncStudentNamePill();
   if(LIB_BOOT && LIB_BOOT.markAssetsReady()) openLibraryAfterAuth();
 }
-function hideAll(){ ['signStage','libStage','introStage','bookStage','workStage'].forEach(id=>$(id).classList.add('hidden')); }
+function hideAll(){ stopLetterIntro(); ['signStage','libStage','introStage','bookStage','workStage'].forEach(id=>$(id).classList.add('hidden')); }
 function showLib(){
   if(!studentName()) return;
   if(pack && pack.book_id) lastTestBook=pack.book_id;
@@ -916,6 +941,8 @@ function cousinGlyph(letter){
   const alpha=(COUSIN_META.latin_letters||{})[lang]||'';
   return alpha.includes(L)?L:'';
 }
+function letterIntroFile(){ return (pack.letter_intros||[])[0] || LETTER_INTRO[pack.book_id] || ''; }
+function stopLetterIntro(){ const v=$('letterIntroVid'); if(v) v.pause(); }
 
 function syncFamousGate(){
   const go=$('introGo');
@@ -935,6 +962,7 @@ function stopFamousMedia(){
 function showIntro(){
   mode='intro'; stopA(); hideAll();
   $('introStage').classList.remove('hidden');
+  $('introStage').classList.toggle('letter-intro', introStep==='letter-intro');
   $('introGo').classList.remove('hidden');
   $('introGo').disabled=false;
   syncModeLocks();
@@ -956,7 +984,7 @@ function showIntro(){
       $('introGo').textContent='Next';
       return;
     }
-    if(!letters.length){ reportIntroStep('sound'); introStep='famous-card'; showIntro(); return; }
+    if(!letters.length){ reportIntroStep('sound'); introStep='letter-intro'; showIntro(); return; }
     const L=letters[cousinIdx];
     const cu=cousinGlyph(L);
     $('modeBadge').textContent=letterTitle(L);
@@ -973,6 +1001,27 @@ function showIntro(){
     </div>`;
     playPath('decodable/letter_names/'+L+'.mp3', null, 1);
     $('introGo').textContent = cousinIdx<letters.length-1 ? 'Next letter' : 'Next';
+    return;
+  }
+  if(introStep==='letter-intro'){
+    const file=letterIntroFile();
+    if(!file){ introStep='famous-card'; showIntro(); return; }
+    $('modeBadge').textContent='Letter intro';
+    const src=asset('decodable/letter_intro/'+file);
+    $('introBody').innerHTML=`<video class="carpetVid" id="letterIntroVid" src="${src}" autoplay playsinline webkit-playsinline></video>`;
+    letterIntroDone=false;
+    $('introGo').textContent='Next';
+    $('introGo').disabled=true;
+    const v=$('letterIntroVid');
+    const unlock=()=>{
+      if($('letterIntroVid')!==v) return;
+      letterIntroDone=true;
+      $('introGo').disabled=false;
+    };
+    v.onended=()=>{ unlock(); reportIntroStep('letter-intro', {video:file}); };
+    v.onerror=()=>{ console.warn('letter intro video missing', src); unlock(); };
+    v.onclick=()=>{ if(v.paused) v.play().catch(()=>{}); };
+    v.play().catch(e=>{ if(e && e.name==='NotAllowedError') v.controls=true; });
     return;
   }
   if(introStep==='famous-card'){
@@ -1054,6 +1103,10 @@ function chooseDiff(d){ setBookProg(pack.book_id,{difficulty:d}); startDictation
 function introAdvance(){
   if(introStep==='cousin'){
     if(cousinIdx<cousinLetters().length-1){ cousinIdx++; showIntro(); return; }
+    introStep='letter-intro'; showIntro(); return;
+  }
+  if(introStep==='letter-intro'){
+    if(!letterIntroDone) return;
     introStep='famous-card'; showIntro(); return;
   }
   if(introStep==='famous-card'){
@@ -1987,7 +2040,12 @@ function testBackIntro(){
     if(cousinIdx>0){ cousinIdx--; showIntro(); return; }
     showLib(); return;
   }
+  if(introStep==='letter-intro'){
+    if(letters.length || SOUND_CARD[pack.book_id]){ introStep='cousin'; cousinIdx=Math.max(0, letters.length-1); showIntro(); return; }
+    showLib(); return;
+  }
   if(introStep==='famous-card'){
+    if(letterIntroFile()){ introStep='letter-intro'; showIntro(); return; }
     if(letters.length){ introStep='cousin'; cousinIdx=letters.length-1; showIntro(); return; }
     showLib(); return;
   }
